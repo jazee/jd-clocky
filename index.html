@@ -12,16 +12,19 @@
       --muted: #6b7280;
       --line: #e5e7eb;
       --accent: #4f46e5;
-      --accent-soft:#eef2ff;
-      --accent-strong:#3730a3;
+      --accent-soft: #eef2ff;
+      --accent-strong: #3730a3;
+      --success: #16a34a;
+      --danger: #dc2626;
     }
 
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: linear-gradient(180deg,#f8fafc, #eef2ff);
-      min-height:100vh;
+      background: linear-gradient(180deg, #f8fafc, #eef2ff);
+      min-height: 100vh;
       color: var(--text);
       padding: 16px;
     }
@@ -34,12 +37,12 @@
     }
 
     .card {
-      position:relative;
+      position: relative;
       background: var(--card);
       border: 1px solid var(--line);
       border-radius: 16px;
       padding: 16px;
-      box-shadow: 0 8px 22px rgba(0,0,0,0.06);
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
     }
 
     h1, h2 {
@@ -63,22 +66,24 @@
       gap: 8px;
     }
 
-    button, select, input, textarea {
-      transition:border 0.15s, box-shadow 0.15s;
+    button, input, textarea, select {
+      transition: border 0.15s, box-shadow 0.15s, transform 0.15s;
       font: inherit;
     }
 
     .project-btn, .btn {
       border: 1px solid var(--line);
-      background:white;
-      border:1px solid #e5e7eb;
+      background: white;
       color: var(--text);
       border-radius: 12px;
       padding: 12px;
       cursor: pointer;
     }
 
-    .project-btn:hover{transform:translateY(-1px);box-shadow:0 4px 10px rgba(0,0,0,0.08);} 
+    .project-btn:hover, .btn:hover, .tiny-btn:hover, .quick:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    }
 
     .project-btn.active {
       background: var(--accent);
@@ -93,14 +98,20 @@
     }
 
     .btn.primary {
-      box-shadow:0 6px 16px rgba(79,70,229,0.25);
       background: var(--accent);
       color: white;
       border-color: var(--accent);
+      box-shadow: 0 6px 16px rgba(79, 70, 229, 0.25);
+    }
+
+    .btn.danger {
+      background: white;
+      color: var(--danger);
+      border-color: #fecaca;
     }
 
     .time {
-      color:var(--accent-strong);
+      color: var(--accent-strong);
       font-size: 36px;
       font-weight: 700;
       letter-spacing: 0.02em;
@@ -111,10 +122,17 @@
     .center { text-align: center; }
 
     .add-grid {
-      display:grid;
-      grid-template-columns:1fr 1fr 1fr;
-      gap:10px;
-      align-items:center;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .csv-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 10px;
+      align-items: center;
     }
 
     input, textarea {
@@ -133,11 +151,10 @@
     }
 
     .quick {
-      background:var(--accent-soft);
+      background: var(--accent-soft);
       padding: 10px 12px;
       border-radius: 999px;
       border: 1px solid var(--line);
-      background: white;
       cursor: pointer;
     }
 
@@ -154,11 +171,16 @@
       vertical-align: top;
     }
 
-    th { color: var(--muted); font-weight: 600; }
+    th {
+      color: var(--muted);
+      font-weight: 600;
+      white-space: nowrap;
+    }
 
     .tiny-btn {
-      border: 1px solid var(--line);
+      border: 1px solid #fecaca;
       background: white;
+      color: var(--danger);
       border-radius: 10px;
       padding: 8px 10px;
       cursor: pointer;
@@ -193,7 +215,7 @@
       gap: 8px;
       padding: 8px 12px;
       border-radius: 999px;
-      background: rgba(255,255,255,0.7);
+      background: rgba(255, 255, 255, 0.7);
       color: var(--accent-strong);
       font-size: 13px;
       font-weight: 600;
@@ -213,8 +235,16 @@
       font-size: 14px;
     }
 
+    .subcard {
+      margin-top: 12px;
+      padding: 12px;
+      background: #fafafe;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+    }
+
     @media (max-width: 640px) {
-      .projects, .btn-row, .add-grid {
+      .projects, .btn-row, .add-grid, .csv-grid {
         grid-template-columns: 1fr;
       }
 
@@ -243,7 +273,9 @@
 <body>
   <div class="wrap">
     <div class="card affirmation-card">
+      <div class="affirmation-badge">💛 Daily encouragement</div>
       <div class="affirmation-text" id="affirmationText"></div>
+      <div class="affirmation-sub">A little reminder before you begin ✨</div>
     </div>
 
     <div class="card">
@@ -309,7 +341,16 @@
       </div>
       <div class="toolbar">
         <button class="btn" id="copyBtn">Copy Log</button>
-        <button class="btn" id="clearBtn">Clear All Data</button>
+        <button class="btn danger" id="clearBtn">Clear All Data</button>
+      </div>
+      <div class="subcard">
+        <div style="font-weight:600; margin-bottom:8px; color:var(--accent-strong);">Download CSV</div>
+        <div class="csv-grid">
+          <input id="csvStartDateInput" type="date" />
+          <input id="csvEndDateInput" type="date" />
+          <button class="btn primary" id="downloadCsvBtn">Download CSV</button>
+        </div>
+        <div class="muted" style="margin-top:8px;">Exports log rows whose dates fall within the selected range.</div>
       </div>
     </div>
   </div>
@@ -318,28 +359,6 @@
     const PROJECTS = ["Prometheus", "Deinde", "NeuroFine"];
     const STORAGE_KEY = "wife_clocking_app_v1";
     const HOURLY_RATE = 200;
-    
-
-    let state = loadState();
-    if (!Array.isArray(state.selectedRows)) state.selectedRows = []; 
-    let tickInterval = null;
-
-    const projectButtons = document.getElementById("projectButtons");
-    const selectedProjectText = document.getElementById("selectedProjectText");
-    const timerDisplay = document.getElementById("timerDisplay");
-    const timerStatus = document.getElementById("timerStatus");
-    const runningPill = document.getElementById("runningPill");
-    const startBtn = document.getElementById("startBtn");
-    const stopBtn = document.getElementById("stopBtn");
-    const manualDateInput = document.getElementById("manualDateInput");
-    const hoursInput = document.getElementById("hoursInput");
-    const minutesInput = document.getElementById("minutesInput");
-    const addTimeBtn = document.getElementById("addTimeBtn");
-    const logBody = document.getElementById("logBody");
-    const summary = document.getElementById("summary");
-    const copyBtn = document.getElementById("copyBtn");
-    const clearBtn = document.getElementById("clearBtn");
-    const affirmationText = document.getElementById("affirmationText");
 
     const AFFIRMATIONS = [
       "🌟 You’re doing amazing work today.",
@@ -362,8 +381,8 @@
       "💎 Your work has depth and quality.",
       "☀️ Today is lucky to have your energy.",
       "🌺 You are creating something worthwhile.",
-      "🎉 You’ve already done hard things before."
-      ,"🧡 Your discipline is quietly extraordinary.",
+      "🎉 You’ve already done hard things before.",
+      "🧡 Your discipline is quietly extraordinary.",
       "🌙 Your steady effort adds up in a big way.",
       "🍀 You are more prepared than you think.",
       "🕊️ Breathe. Begin. You can do this.",
@@ -372,7 +391,7 @@
       "⚡ You bring real intelligence to your work.",
       "💐 The details you notice make a difference.",
       "🌟 You are making today count.",
-      "🎈You deserve to feel proud of your effort.",
+      "🎈 You deserve to feel proud of your effort.",
       "🫶 Your work ethic is inspiring.",
       "🌞 You can handle this one step at a time.",
       "🎨 There is elegance in how you work.",
@@ -383,7 +402,7 @@
       "🧘 You can do hard things with calm.",
       "💡 Your ideas matter.",
       "🌱 Today is another chance to shine.",
-      "🪻You bring care, thought, and excellence.",
+      "🪻 You bring care, thought, and excellence.",
       "🎀 You are doing better than you think.",
       "🛠️ Piece by piece, you are building something important.",
       "👑 You carry this with intelligence and grace.",
@@ -420,7 +439,7 @@
       "🍃 You can move through today with ease and strength.",
       "🏵️ Your standards and care shine through.",
       "🎇 You have everything you need to make progress today.",
-      "📍You are exactly capable enough for the next step.",
+      "📍 You are exactly capable enough for the next step.",
       "🦄 Your work has both intelligence and heart.",
       "🧠 You solve things thoughtfully and well.",
       "🌈 You make meaningful things happen.",
@@ -449,22 +468,73 @@
       "🌷 Today can be productive and gentle at the same time."
     ];
 
-    affirmationText.textContent = AFFIRMATIONS[Math.floor(Math.random() * AFFIRMATIONS.length)];
+    let state = loadState();
+    let tickInterval = null;
 
-    manualDateInput.value = new Date().toISOString().slice(0, 10);
-    renderProjectButtons();
-    render();
-    startTicking();
+    const projectButtons = document.getElementById("projectButtons");
+    const selectedProjectText = document.getElementById("selectedProjectText");
+    const timerDisplay = document.getElementById("timerDisplay");
+    const timerStatus = document.getElementById("timerStatus");
+    const runningPill = document.getElementById("runningPill");
+    const startBtn = document.getElementById("startBtn");
+    const stopBtn = document.getElementById("stopBtn");
+    const manualDateInput = document.getElementById("manualDateInput");
+    const hoursInput = document.getElementById("hoursInput");
+    const minutesInput = document.getElementById("minutesInput");
+    const addTimeBtn = document.getElementById("addTimeBtn");
+    const logBody = document.getElementById("logBody");
+    const summary = document.getElementById("summary");
+    const copyBtn = document.getElementById("copyBtn");
+    const clearBtn = document.getElementById("clearBtn");
+    const affirmationText = document.getElementById("affirmationText");
+    const csvStartDateInput = document.getElementById("csvStartDateInput");
+    const csvEndDateInput = document.getElementById("csvEndDateInput");
+    const downloadCsvBtn = document.getElementById("downloadCsvBtn");
+
+    init();
+
+    function init() {
+      if (!Array.isArray(state.selectedRows)) state.selectedRows = [];
+      affirmationText.textContent = AFFIRMATIONS[Math.floor(Math.random() * AFFIRMATIONS.length)];
+
+      const todayStr = new Date().toISOString().slice(0, 10);
+      manualDateInput.value = todayStr;
+      csvStartDateInput.value = todayStr;
+      csvEndDateInput.value = todayStr;
+
+      renderProjectButtons();
+      render();
+      startTicking();
+      runSelfChecks();
+    }
 
     function loadState() {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) return JSON.parse(raw);
-      return {
-        selectedProject: "",
-        runningEntry: null,
-        logs: [],
-        selectedRows: []
-      };
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) {
+          return {
+            selectedProject: "",
+            runningEntry: null,
+            logs: [],
+            selectedRows: []
+          };
+        }
+        const parsed = JSON.parse(raw);
+        return {
+          selectedProject: parsed.selectedProject || "",
+          runningEntry: parsed.runningEntry || null,
+          logs: Array.isArray(parsed.logs) ? parsed.logs : [],
+          selectedRows: Array.isArray(parsed.selectedRows) ? parsed.selectedRows : []
+        };
+      } catch (error) {
+        console.error("Failed to load saved data", error);
+        return {
+          selectedProject: "",
+          runningEntry: null,
+          logs: [],
+          selectedRows: []
+        };
+      }
     }
 
     function saveState() {
@@ -513,8 +583,21 @@
       return new Date(ts).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
     }
 
-    
-      
+    function formatDateForInput(ts) {
+      const d = new Date(ts);
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+
+    function csvEscape(value) {
+      const str = String(value ?? "");
+      if (/[",\n]/.test(str)) {
+        return `"${str.replace(/"/g, '""')}"`;
+      }
+      return str;
+    }
 
     function render() {
       selectedProjectText.textContent = state.selectedProject
@@ -533,11 +616,11 @@
       }
 
       const totals = {};
-      PROJECTS.forEach(p => totals[p] = 0);
+      PROJECTS.forEach(project => { totals[project] = 0; });
       state.logs.forEach(log => {
         totals[log.project] = (totals[log.project] || 0) + log.durationMinutes;
       });
-      summary.textContent = PROJECTS.map(p => `${p}: ${formatMinutesAsHoursMinutes(totals[p])}`).join(" • ");
+      summary.textContent = PROJECTS.map(project => `${project}: ${formatMinutesAsHoursMinutes(totals[project])}`).join(" • ");
 
       logBody.innerHTML = "";
       [...state.logs].reverse().forEach((log, reverseIndex) => {
@@ -545,10 +628,10 @@
         const tr = document.createElement("tr");
         const hours = (log.durationMinutes / 60).toFixed(2);
         const rate = HOURLY_RATE;
-        const total = (hours * rate).toFixed(2);
+        const total = (Number(hours) * rate).toFixed(2);
 
         const deinde = log.project === "Deinde" ? hours : "";
-        const neuro = log.project === "NeuroFine" ? hours : "";
+        const neuroFine = log.project === "NeuroFine" ? hours : "";
         const prometheus = log.project === "Prometheus" ? hours : "";
 
         tr.innerHTML = `
@@ -556,17 +639,17 @@
           <td>${formatDate(log.start)}</td>
           <td>Work</td>
           <td>${deinde}</td>
-          <td>${neuro}</td>
+          <td>${neuroFine}</td>
           <td>${prometheus}</td>
           <td>$${rate}</td>
           <td>$${total}</td>
           <td><button class="tiny-btn" data-delete-index="${originalIndex}">Delete</button></td>
-          `;
-        
+        `;
 
-        tr.querySelector('[data-select-index]').onchange = (e) => {
-          const idx = Number(e.target.dataset.selectIndex);
-          if (e.target.checked) {
+        const checkbox = tr.querySelector("[data-select-index]");
+        checkbox.onchange = (event) => {
+          const idx = Number(event.target.dataset.selectIndex);
+          if (event.target.checked) {
             if (!state.selectedRows.includes(idx)) state.selectedRows.push(idx);
           } else {
             state.selectedRows = state.selectedRows.filter(i => i !== idx);
@@ -574,16 +657,17 @@
           saveState();
         };
 
-        const delBtn = tr.querySelector('[data-delete-index]');
+        const delBtn = tr.querySelector("[data-delete-index]");
         delBtn.onclick = () => {
           const idx = Number(delBtn.dataset.deleteIndex);
-          state.logs.splice(idx,1);
+          state.logs.splice(idx, 1);
           state.selectedRows = state.selectedRows
             .filter(i => i !== idx)
-            .map(i => i > idx ? i-1 : i);
+            .map(i => (i > idx ? i - 1 : i));
           saveState();
           render();
         };
+
         logBody.appendChild(tr);
       });
     }
@@ -595,6 +679,38 @@
       }, 1000);
     }
 
+    function fireConfetti() {
+      const duration = 800;
+      const endTime = Date.now() + duration;
+      const colors = ["#4f46e5", "#22c55e", "#f59e0b", "#ef4444"];
+
+      (function frame() {
+        colors.forEach(color => {
+          const el = document.createElement("div");
+          el.style.position = "fixed";
+          el.style.left = (Math.random() * 100) + "vw";
+          el.style.top = "-10px";
+          el.style.width = "8px";
+          el.style.height = "8px";
+          el.style.background = color;
+          el.style.pointerEvents = "none";
+          el.style.borderRadius = "2px";
+          el.style.zIndex = "9999";
+          document.body.appendChild(el);
+          const fall = 100 + Math.random() * 100;
+          el.animate(
+            [
+              { transform: "translateY(0px) rotate(0deg)", opacity: 1 },
+              { transform: `translateY(${fall}vh) rotate(720deg)`, opacity: 0 }
+            ],
+            { duration: 900 + Math.random() * 600, easing: "ease-out" }
+          ).onfinish = () => el.remove();
+        });
+
+        if (Date.now() < endTime) requestAnimationFrame(frame);
+      })();
+    }
+
     startBtn.onclick = () => {
       if (!state.selectedProject) {
         alert("Choose a project first.");
@@ -604,6 +720,7 @@
         alert("A timer is already running.");
         return;
       }
+
       state.runningEntry = {
         project: state.selectedProject,
         start: Date.now()
@@ -617,6 +734,7 @@
         alert("No timer is running.");
         return;
       }
+
       const end = Date.now();
       const durationMinutes = Math.max(1, Math.round((end - state.runningEntry.start) / 60000));
       const newLog = {
@@ -626,11 +744,12 @@
         durationMinutes,
         manual: false
       };
+
       state.logs.push(newLog);
       state.runningEntry = null;
       saveState();
       render();
-      
+      fireConfetti();
     };
 
     document.querySelectorAll(".quick").forEach(btn => {
@@ -653,7 +772,7 @@
         return;
       }
 
-      const totalMinutes = hours * 60 + minutes;
+      const totalMinutes = (hours * 60) + minutes;
       if (totalMinutes <= 0) {
         alert("Enter some time first.");
         return;
@@ -668,13 +787,13 @@
         durationMinutes: totalMinutes,
         manual: true
       };
-      state.logs.push(newLog);
 
+      state.logs.push(newLog);
       hoursInput.value = "";
       minutesInput.value = "";
       saveState();
       render();
-      
+      fireConfetti();
     };
 
     copyBtn.onclick = async () => {
@@ -689,22 +808,22 @@
         return;
       }
 
-      const header = "Date	Description	Deinde	NeuroFine	Prometheus	Hourly Rate	Total Amount ($)";
+      const header = ["Date", "Description", "Deinde", "NeuroFine", "Prometheus", "Hourly Rate", "Total Amount ($)"].join("\t");
       const rows = selectedLogs.map(log => {
         const hours = (log.durationMinutes / 60).toFixed(2);
-        const rate = HOURLY_RATE;
-        const total = (Number(hours) * rate).toFixed(2);
+        const total = (Number(hours) * HOURLY_RATE).toFixed(2);
         return [
-          `${formatDate(log.start)} Work`,
+          formatDate(log.start),
+          "Work",
           log.project === "Deinde" ? hours : "",
           log.project === "NeuroFine" ? hours : "",
           log.project === "Prometheus" ? hours : "",
-          `$${rate}`,
+          `$${HOURLY_RATE}`,
           `$${total}`
-        ].join("	");
+        ].join("\t");
       });
 
-      const text = [header, ...rows].join(String.fromCharCode(10));
+      const text = [header, ...rows].join("\n");
       await navigator.clipboard.writeText(text);
       alert("Selected rows copied to clipboard.");
     };
@@ -712,59 +831,89 @@
     clearBtn.onclick = () => {
       const ok = confirm("Clear all saved time data on this device?");
       if (!ok) return;
+
       state = {
         selectedProject: "",
         runningEntry: null,
         logs: [],
         selectedRows: []
       };
+
       saveState();
       renderProjectButtons();
       render();
     };
-  
-    // simple confetti effect
-    function fireConfetti(){
-      const duration = 800;
-      const end = Date.now() + duration;
-      const colors = ['#4f46e5','#22c55e','#f59e0b','#ef4444'];
-      (function frame(){
-        const particleCount = 8;
-        colors.forEach((color,i)=>{
-          const el = document.createElement('div');
-          el.style.position='fixed';
-          el.style.left = (Math.random()*100)+'vw';
-          el.style.top = '-10px';
-          el.style.width='8px';
-          el.style.height='8px';
-          el.style.background=color;
-          el.style.pointerEvents='none';
-          el.style.borderRadius='2px';
-          el.style.zIndex='9999';
-          document.body.appendChild(el);
-          const fall = 100 + Math.random()*100;
-          el.animate([
-            {transform:'translateY(0px) rotate(0deg)',opacity:1},
-            {transform:`translateY(${fall}vh) rotate(720deg)`,opacity:0}
-          ],{duration:900+Math.random()*600,easing:'ease-out'}).onfinish=()=>el.remove();
-        });
-        if(Date.now()<end) requestAnimationFrame(frame);
-      })();
+
+    downloadCsvBtn.onclick = () => {
+      if (!state.logs.length) {
+        alert("No log entries to export.");
+        return;
+      }
+
+      const startDate = csvStartDateInput.value;
+      const endDate = csvEndDateInput.value;
+
+      if (!startDate || !endDate) {
+        alert("Choose both a start date and end date.");
+        return;
+      }
+
+      if (startDate > endDate) {
+        alert("Start date must be on or before end date.");
+        return;
+      }
+
+      const filteredLogs = state.logs.filter(log => {
+        const logDate = formatDateForInput(log.start);
+        return logDate >= startDate && logDate <= endDate;
+      });
+
+      if (!filteredLogs.length) {
+        alert("No log entries found in that date range.");
+        return;
+      }
+
+      const headers = ["Date", "Description", "Project", "Hours", "Hourly Rate", "Total Amount"];
+      const rows = filteredLogs.map(log => {
+        const hours = (log.durationMinutes / 60).toFixed(2);
+        const total = (Number(hours) * HOURLY_RATE).toFixed(2);
+        return [
+          formatDateForInput(log.start),
+          "Work",
+          log.project,
+          hours,
+          HOURLY_RATE,
+          total
+        ];
+      });
+
+      const csv = [headers, ...rows]
+        .map(row => row.map(csvEscape).join(","))
+        .join("\n");
+
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `project-clock-${startDate}-to-${endDate}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    };
+
+    function runSelfChecks() {
+      try {
+        console.assert(csvEscape("plain") === "plain", "csvEscape should leave plain text unchanged");
+        console.assert(csvEscape('a,b') === '"a,b"', "csvEscape should quote commas");
+        console.assert(csvEscape('a\nb') === '"a\nb"', "csvEscape should quote newlines");
+        console.assert(csvEscape('a"b') === '"a""b"', "csvEscape should escape quotes");
+        console.assert(formatDateForInput(new Date("2026-03-11T12:00:00").getTime()) === "2026-03-11", "formatDateForInput should format yyyy-mm-dd");
+      } catch (error) {
+        console.error("Self-check failed", error);
+      }
     }
-
-    // trigger confetti on log creation
-    const originalStopHandler = stopBtn.onclick;
-    stopBtn.onclick = () => {
-      originalStopHandler();
-      fireConfetti();
-    };
-
-    const originalManualHandler = addTimeBtn.onclick;
-    addTimeBtn.onclick = () => {
-      originalManualHandler();
-      fireConfetti();
-    };
-
   </script>
 </body>
 </html>
+
