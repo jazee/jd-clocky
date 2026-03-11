@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Project Clock</title>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --line: #e5e7eb;
+      --accent: #111827;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 16px;
+    }
+
+    .wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      display: grid;
+      gap: 14px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+
+    h1, h2 {
+      margin: 0 0 10px;
+      line-height: 1.2;
+    }
+
+    h1 { font-size: 24px; }
+    h2 { font-size: 18px; }
+
+    .muted { color: var(--muted); }
+
+    .grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .projects {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    button, select, input, textarea {
+      font: inherit;
+    }
+
+    .project-btn, .btn {
+      border: 1px solid var(--line);
+      background: white;
+      color: var(--text);
+      border-radius: 12px;
+      padding: 12px;
+      cursor: pointer;
+    }
+
+    .project-btn.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    .btn-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .btn.primary {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    .time {
+      font-size: 36px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      text-align: center;
+      margin: 8px 0;
+    }
+
+    .center { text-align: center; }
+
+    .add-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    input, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+      background: white;
+    }
+
+    .quick-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .quick {
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: white;
+      cursor: pointer;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 10px 8px;
+      border-top: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th { color: var(--muted); font-weight: 600; }
+
+    .tiny-btn {
+      border: 1px solid var(--line);
+      background: white;
+      border-radius: 10px;
+      padding: 8px 10px;
+      cursor: pointer;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .running-pill {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #eef2ff;
+      color: #3730a3;
+      font-size: 13px;
+      margin-top: 6px;
+    }
+
+    @media (max-width: 640px) {
+      .projects, .btn-row, .add-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .time {
+        font-size: 30px;
+      }
+
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+
+      thead { display: none; }
+
+      tr {
+        border-top: 1px solid var(--line);
+        padding: 8px 0;
+      }
+
+      td {
+        border: 0;
+        padding: 4px 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Project Clock</h1>
+      <div class="muted">All data is saved on this device only.</div>
+    </div>
+
+    <div class="card grid">
+      <h2>1. Choose project</h2>
+      <div class="projects" id="projectButtons"></div>
+      <div id="selectedProjectText" class="muted">No project selected.</div>
+    </div>
+
+    <div class="card grid">
+      <h2>2. Clock in / out</h2>
+      <div class="time" id="timerDisplay">00:00:00</div>
+      <div class="center muted" id="timerStatus">Not running</div>
+      <div class="center"><span id="runningPill"></span></div>
+      <div class="btn-row">
+        <button class="btn primary" id="startBtn">START</button>
+        <button class="btn" id="stopBtn">STOP</button>
+      </div>
+    </div>
+
+    <div class="card grid">
+      <h2>3. Add time directly</h2>
+      <div class="add-grid">
+        <input id="hoursInput" type="number" min="0" step="1" placeholder="Hours" />
+        <input id="minutesInput" type="number" min="0" step="15" placeholder="Minutes (15 min increments)" />
+      </div>
+      <div class="quick-row">
+        <button class="quick" data-minutes="15">+15m</button>
+        <button class="quick" data-minutes="30">+30m</button>
+        <button class="quick" data-minutes="45">+45m</button>
+        <button class="quick" data-minutes="60">+1h</button>
+        <button class="quick" data-minutes="120">+2h</button>
+      </div>
+      <button class="btn primary" id="addTimeBtn">Add Manual Time</button>
+      <div class="muted">Manual entry saves one log entry for the selected project.</div>
+    </div>
+
+    <div class="card grid">
+      <h2>4. Log</h2>
+      <div id="summary" class="muted"></div>
+      <div style="overflow:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Select</th>
+              <th>Description</th>
+              <th>Deinde</th>
+              <th>NeuroFine</th>
+              <th>Prometheus</th>
+              <th>Hourly Rate</th>
+              <th>Total Amount ($)</th>
+              <th>Delete</th>
+            </tr>
+          </thead>
+          <tbody id="logBody"></tbody>
+        </table>
+      </div>
+      <div class="toolbar">
+        <button class="btn" id="copyBtn">Copy Log</button>
+        <button class="btn" id="clearBtn">Clear All Data</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const PROJECTS = ["Prometheus", "Deinde", "NeuroFine"];
+    const STORAGE_KEY = "wife_clocking_app_v1";
+
+    let state = loadState();
+    if (!Array.isArray(state.selectedRows)) state.selectedRows = []; 
+    let tickInterval = null;
+
+    const projectButtons = document.getElementById("projectButtons");
+    const selectedProjectText = document.getElementById("selectedProjectText");
+    const timerDisplay = document.getElementById("timerDisplay");
+    const timerStatus = document.getElementById("timerStatus");
+    const runningPill = document.getElementById("runningPill");
+    const startBtn = document.getElementById("startBtn");
+    const stopBtn = document.getElementById("stopBtn");
+    const hoursInput = document.getElementById("hoursInput");
+    const minutesInput = document.getElementById("minutesInput");
+    const addTimeBtn = document.getElementById("addTimeBtn");
+    const logBody = document.getElementById("logBody");
+    const summary = document.getElementById("summary");
+    const copyBtn = document.getElementById("copyBtn");
+    const clearBtn = document.getElementById("clearBtn");
+
+    renderProjectButtons();
+    render();
+    startTicking();
+
+    function loadState() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) return JSON.parse(raw);
+      return {
+        selectedProject: "",
+        runningEntry: null,
+        logs: [],
+        selectedRows: []
+      };
+    }
+
+    function saveState() {
+      if (!Array.isArray(state.selectedRows)) state.selectedRows = [];
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function renderProjectButtons() {
+      projectButtons.innerHTML = "";
+      PROJECTS.forEach(project => {
+        const btn = document.createElement("button");
+        btn.className = "project-btn" + (state.selectedProject === project ? " active" : "");
+        btn.textContent = project;
+        btn.onclick = () => {
+          state.selectedProject = project;
+          saveState();
+          renderProjectButtons();
+          render();
+        };
+        projectButtons.appendChild(btn);
+      });
+    }
+
+    function formatDuration(ms) {
+      const totalSeconds = Math.floor(ms / 1000);
+      const h = Math.floor(totalSeconds / 3600);
+      const m = Math.floor((totalSeconds % 3600) / 60);
+      const s = totalSeconds % 60;
+      return [h, m, s].map(n => String(n).padStart(2, "0")).join(":");
+    }
+
+    function formatMinutesAsHoursMinutes(totalMinutes) {
+      const h = Math.floor(totalMinutes / 60);
+      const m = totalMinutes % 60;
+      if (h && m) return `${h}h ${m}m`;
+      if (h) return `${h}h`;
+      return `${m}m`;
+    }
+
+    function formatDate(ts) {
+      return new Date(ts).toLocaleDateString();
+    }
+
+    function formatTime(ts) {
+      if (!ts) return "-";
+      return new Date(ts).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+    }
+
+    function render() {
+      selectedProjectText.textContent = state.selectedProject
+        ? `Selected: ${state.selectedProject}`
+        : "No project selected.";
+
+      if (state.runningEntry) {
+        const elapsed = Date.now() - state.runningEntry.start;
+        timerDisplay.textContent = formatDuration(elapsed);
+        timerStatus.textContent = "Running";
+        runningPill.innerHTML = `<span class="running-pill">${state.runningEntry.project}</span>`;
+      } else {
+        timerDisplay.textContent = "00:00:00";
+        timerStatus.textContent = "Not running";
+        runningPill.innerHTML = "";
+      }
+
+      const totals = {};
+      PROJECTS.forEach(p => totals[p] = 0);
+      state.logs.forEach(log => {
+        totals[log.project] = (totals[log.project] || 0) + log.durationMinutes;
+      });
+      summary.textContent = PROJECTS.map(p => `${p}: ${formatMinutesAsHoursMinutes(totals[p])}`).join(" • ");
+
+      logBody.innerHTML = "";
+      [...state.logs].reverse().forEach((log, reverseIndex) => {
+        const originalIndex = state.logs.length - 1 - reverseIndex;
+        const tr = document.createElement("tr");
+        const hours = (log.durationMinutes / 60).toFixed(2);
+        const rate = 200;
+        const total = (hours * rate).toFixed(2);
+
+        const deinde = log.project === "Deinde" ? hours : "";
+        const neuro = log.project === "NeuroFine" ? hours : "";
+        const prometheus = log.project === "Prometheus" ? hours : "";
+
+        tr.innerHTML = `
+          <td><input type="checkbox" data-select-index="${originalIndex}" ${state.selectedRows.includes(originalIndex) ? "checked" : ""}></td>
+          <td>${formatDate(log.start)} Work</td>
+          <td>${deinde}</td>
+          <td>${neuro}</td>
+          <td>${prometheus}</td>
+          <td>$${rate}</td>
+          <td>$${total}</td>
+          <td><button class="tiny-btn" data-delete-index="${originalIndex}">Delete</button></td>
+          `;
+        
+
+        tr.querySelector('[data-select-index]').onchange = (e) => {
+          const idx = Number(e.target.dataset.selectIndex);
+          if (e.target.checked) {
+            if (!state.selectedRows.includes(idx)) state.selectedRows.push(idx);
+          } else {
+            state.selectedRows = state.selectedRows.filter(i => i !== idx);
+          }
+          saveState();
+        };
+
+        const delBtn = tr.querySelector('[data-delete-index]');
+        delBtn.onclick = () => {
+          const idx = Number(delBtn.dataset.deleteIndex);
+          state.logs.splice(idx,1);
+          state.selectedRows = state.selectedRows
+            .filter(i => i !== idx)
+            .map(i => i > idx ? i-1 : i);
+          saveState();
+          render();
+        };
+        logBody.appendChild(tr);
+      });
+    }
+
+    function startTicking() {
+      if (tickInterval) clearInterval(tickInterval);
+      tickInterval = setInterval(() => {
+        if (state.runningEntry) render();
+      }, 1000);
+    }
+
+    startBtn.onclick = () => {
+      if (!state.selectedProject) {
+        alert("Choose a project first.");
+        return;
+      }
+      if (state.runningEntry) {
+        alert("A timer is already running.");
+        return;
+      }
+      state.runningEntry = {
+        project: state.selectedProject,
+        start: Date.now()
+      };
+      saveState();
+      render();
+    };
+
+    stopBtn.onclick = () => {
+      if (!state.runningEntry) {
+        alert("No timer is running.");
+        return;
+      }
+      const end = Date.now();
+      const durationMinutes = Math.max(1, Math.round((end - state.runningEntry.start) / 60000));
+      state.logs.push({
+        project: state.runningEntry.project,
+        start: state.runningEntry.start,
+        end,
+        durationMinutes,
+        manual: false
+      });
+      state.runningEntry = null;
+      saveState();
+      render();
+    };
+
+    document.querySelectorAll(".quick").forEach(btn => {
+      btn.onclick = () => {
+        minutesInput.value = btn.dataset.minutes;
+      };
+    });
+
+    addTimeBtn.onclick = () => {
+      if (!state.selectedProject) {
+        alert("Choose a project first.");
+        return;
+      }
+
+      const hours = Number(hoursInput.value || 0);
+      const minutes = Number(minutesInput.value || 0);
+
+      if (minutes % 15 !== 0) {
+        alert("Minutes must be in 15 minute increments.");
+        return;
+      }
+
+      const totalMinutes = hours * 60 + minutes;
+      if (totalMinutes <= 0) {
+        alert("Enter some time first.");
+        return;
+      }
+
+      const now = Date.now();
+      state.logs.push({
+        project: state.selectedProject,
+        start: now,
+        end: now,
+        durationMinutes: totalMinutes,
+        manual: true
+      });
+
+      hoursInput.value = "";
+      minutesInput.value = "";
+      saveState();
+      render();
+    };
+
+    copyBtn.onclick = async () => {
+      if (!state.logs.length) {
+        alert("No log entries to copy.");
+        return;
+      }
+
+      const selectedLogs = state.logs.filter((_, index) => state.selectedRows.includes(index));
+      if (!selectedLogs.length) {
+        alert("Select at least one row first.");
+        return;
+      }
+
+      const header = "Description	Deinde	NeuroFine	Prometheus	Hourly Rate	Total Amount ($)";
+      const rows = selectedLogs.map(log => {
+        const hours = (log.durationMinutes / 60).toFixed(2);
+        const rate = 200;
+        const total = (Number(hours) * rate).toFixed(2);
+        return [
+          `${formatDate(log.start)} Work`,
+          log.project === "Deinde" ? hours : "",
+          log.project === "NeuroFine" ? hours : "",
+          log.project === "Prometheus" ? hours : "",
+          `$${rate}`,
+          `$${total}`
+        ].join("	");
+      });
+
+      const text = [header, ...rows].join(String.fromCharCode(10));
+      await navigator.clipboard.writeText(text);
+      alert("Selected rows copied to clipboard.");
+    };
+
+    clearBtn.onclick = () => {
+      const ok = confirm("Clear all saved time data on this device?");
+      if (!ok) return;
+      state = {
+        selectedProject: "",
+        runningEntry: null,
+        logs: [],
+        selectedRows: []
+      };
+      saveState();
+      renderProjectButtons();
+      render();
+    };
+  </script>
+</body>
+</html>
