@@ -181,6 +181,38 @@
       margin-top: 6px;
     }
 
+    .affirmation-card {
+      background: linear-gradient(135deg, #ede9fe 0%, #fef3c7 100%);
+      border: 1px solid #ddd6fe;
+      overflow: hidden;
+    }
+
+    .affirmation-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.7);
+      color: var(--accent-strong);
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .affirmation-text {
+      font-size: 22px;
+      line-height: 1.35;
+      font-weight: 700;
+      color: #312e81;
+    }
+
+    .affirmation-sub {
+      margin-top: 8px;
+      color: #5b5f97;
+      font-size: 14px;
+    }
+
     @media (max-width: 640px) {
       .projects, .btn-row, .add-grid {
         grid-template-columns: 1fr;
@@ -210,6 +242,12 @@
 </head>
 <body>
   <div class="wrap">
+    <div class="card affirmation-card">
+      <div class="affirmation-badge">💛 Daily encouragement</div>
+      <div class="affirmation-text" id="affirmationText"></div>
+      <div class="affirmation-sub">A little reminder before you begin ✨</div>
+    </div>
+
     <div class="card">
       <h1>⏱ Project Clock</h1>
       <div class="muted">All data is saved on this device only.</div>
@@ -303,6 +341,117 @@
     const summary = document.getElementById("summary");
     const copyBtn = document.getElementById("copyBtn");
     const clearBtn = document.getElementById("clearBtn");
+    const affirmationText = document.getElementById("affirmationText");
+
+    const AFFIRMATIONS = [
+      "🌟 You’re doing amazing work today.",
+      "💛 Your effort matters more than you know.",
+      "✨ One focused block at a time. You’ve got this.",
+      "🚀 You make progress look graceful.",
+      "🌈 Your work brings real value into the world.",
+      "💪 You are capable, steady, and brilliant.",
+      "🧠 Your mind is sharp and your work is meaningful.",
+      "🌻 Small steps today create big results later.",
+      "🔥 You are building momentum right now.",
+      "💫 The care you put in shows.",
+      "🎯 You know how to get important things done.",
+      "🌸 You bring calm strength to everything you do.",
+      "⭐ Your dedication is beautiful to watch.",
+      "💖 You are stronger than any busy day.",
+      "🪄 You turn effort into progress.",
+      "🌼 The consistency you bring is powerful.",
+      "🏆 You keep showing up, and that matters.",
+      "💎 Your work has depth and quality.",
+      "☀️ Today is lucky to have your energy.",
+      "🌺 You are creating something worthwhile.",
+      "🎉 You’ve already done hard things before."
+      ,"🧡 Your discipline is quietly extraordinary.",
+      "🌙 Your steady effort adds up in a big way.",
+      "🍀 You are more prepared than you think.",
+      "🕊️ Breathe. Begin. You can do this.",
+      "🌷 Your focus is a gift.",
+      "🪴 Growth is happening, even in small moments.",
+      "⚡ You bring real intelligence to your work.",
+      "💐 The details you notice make a difference.",
+      "🌟 You are making today count.",
+      "🎈You deserve to feel proud of your effort.",
+      "🫶 Your work ethic is inspiring.",
+      "🌞 You can handle this one step at a time.",
+      "🎨 There is elegance in how you work.",
+      "📚 Your knowledge and judgment are real strengths.",
+      "💝 The impact of your work reaches farther than you see.",
+      "🏅 Your persistence is paying off.",
+      "🌠 You keep moving things forward.",
+      "🧘 You can do hard things with calm.",
+      "💡 Your ideas matter.",
+      "🌱 Today is another chance to shine.",
+      "🪻You bring care, thought, and excellence.",
+      "🎀 You are doing better than you think.",
+      "🛠️ Piece by piece, you are building something important.",
+      "👑 You carry this with intelligence and grace.",
+      "🌊 Your momentum is growing.",
+      "💥 You are fully capable of a great day.",
+      "🍎 Good work done consistently is a superpower.",
+      "🌹 The way you show up matters.",
+      "🔆 You make meaningful progress every time you begin.",
+      "🧭 You know how to find your way through.",
+      "📈 Effort compounds, and yours definitely does.",
+      "🎊 You are capable of more than today requires.",
+      "🦋 Your growth is visible.",
+      "🧩 You bring clarity where others see complexity.",
+      "🎵 There is rhythm and strength in your discipline.",
+      "🫧 A fresh start can happen at any moment.",
+      "🍯 Your patience and persistence are powerful.",
+      "🌛 Even a little progress is real progress.",
+      "🏔️ You can handle big things by doing the next small thing.",
+      "🥇 Your commitment is something special.",
+      "🎁 The world is better because of work like yours.",
+      "🧡 You make tough things look manageable.",
+      "🌼 Your steady mind is one of your strengths.",
+      "✨ There is beauty in your consistency.",
+      "💗 Your effort is never wasted.",
+      "🪄 You are more than equal to today.",
+      "🌺 Your presence and work both matter.",
+      "📌 One task, one block, one win at a time.",
+      "🌻 The quiet work counts too.",
+      "💫 You keep turning intention into action.",
+      "🎯 You know how to focus when it matters.",
+      "🪴 Progress loves consistency, and you have it.",
+      "⚙️ You are building something strong with every session.",
+      "☀️ Your energy creates movement.",
+      "🍃 You can move through today with ease and strength.",
+      "🏵️ Your standards and care shine through.",
+      "🎇 You have everything you need to make progress today.",
+      "📍You are exactly capable enough for the next step.",
+      "🦄 Your work has both intelligence and heart.",
+      "🧠 You solve things thoughtfully and well.",
+      "🌈 You make meaningful things happen.",
+      "🔔 Your work deserves to be seen and valued.",
+      "🍊 You bring freshness and clarity to what you do.",
+      "🌸 Your best work starts with simply beginning.",
+      "💐 You are building confidence with every session.",
+      "🪙 Every block of effort adds up.",
+      "🎉 Your progress is real, measurable, and worth celebrating.",
+      "🫶 You are loved, capable, and deeply impressive.",
+      "⭐ You bring excellence without needing noise.",
+      "🚀 Starting is powerful, and you already have.",
+      "💞 You make things better with your effort.",
+      "🌟 This is your reminder that you can do hard things.",
+      "🧡 Your thoughtful work leaves a mark.",
+      "🪻 You bring care to everything you touch.",
+      "🎀 The way you keep going is inspiring.",
+      "🌙 Quiet focus is still powerful focus.",
+      "🥂 Here’s to another strong session.",
+      "🧸 Be kind to yourself. You’re doing really well.",
+      "🌞 You have what it takes for a good day.",
+      "💝 Your work matters. So do you.",
+      "🏆 You are dependable in the most beautiful way.",
+      "💎 You bring real quality to what you do.",
+      "✨ You’re capable of turning this moment into progress.",
+      "🌷 Today can be productive and gentle at the same time."
+    ];
+
+    affirmationText.textContent = AFFIRMATIONS[Math.floor(Math.random() * AFFIRMATIONS.length)];
 
     manualDateInput.value = new Date().toISOString().slice(0, 10);
     renderProjectButtons();
