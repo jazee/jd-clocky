@@ -320,7 +320,7 @@
     const PROJECTS = ["Prometheus", "Deinde", "NeuroFine"];
     const STORAGE_KEY = "wife_clocking_app_v1";
     const HOURLY_RATE = 200;
-    const SHEET_WEB_APP_URL = "PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
+    
 
     let state = loadState();
     if (!Array.isArray(state.selectedRows)) state.selectedRows = []; 
@@ -515,40 +515,8 @@
       return new Date(ts).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
     }
 
-    async function syncLogToGoogleSheet(log) {
-      if (!SHEET_WEB_APP_URL || SHEET_WEB_APP_URL.includes("PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE")) {
-        return;
-      }
-
-      const hours = (log.durationMinutes / 60).toFixed(2);
-      const totalAmount = (Number(hours) * HOURLY_RATE).toFixed(2);
-
-      const payload = {
-        description: `${formatDate(log.start)} Work`,
-        project: log.project,
-        deinde: log.project === "Deinde" ? hours : "",
-        neuroFine: log.project === "NeuroFine" ? hours : "",
-        prometheus: log.project === "Prometheus" ? hours : "",
-        hourlyRate: HOURLY_RATE,
-        totalAmount,
-        durationMinutes: log.durationMinutes,
-        start: new Date(log.start).toISOString(),
-        end: new Date(log.end).toISOString(),
-        manual: !!log.manual,
-        createdAt: new Date().toISOString()
-      };
-
-      try {
-        await fetch(SHEET_WEB_APP_URL, {
-          method: "POST",
-          mode: "cors",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-      } catch (err) {
-        console.error("Google Sheet sync failed", err);
-      }
-    }
+    
+      
 
     function render() {
       selectedProjectText.textContent = state.selectedProject
@@ -664,7 +632,7 @@
       state.runningEntry = null;
       saveState();
       render();
-      syncLogToGoogleSheet(newLog);
+      
     };
 
     document.querySelectorAll(".quick").forEach(btn => {
@@ -708,7 +676,7 @@
       minutesInput.value = "";
       saveState();
       render();
-      syncLogToGoogleSheet(newLog);
+      
     };
 
     copyBtn.onclick = async () => {
