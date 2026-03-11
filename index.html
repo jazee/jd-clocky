@@ -245,6 +245,7 @@
           <thead>
             <tr>
               <th>Select</th>
+              <th>Date</th>
               <th>Description</th>
               <th>Deinde</th>
               <th>NeuroFine</th>
@@ -268,7 +269,7 @@
     const PROJECTS = ["Prometheus", "Deinde", "NeuroFine"];
     const STORAGE_KEY = "wife_clocking_app_v1";
     const HOURLY_RATE = 200;
-    const SHEET_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwSdg_VUJVvqYzBOGv_BF1jMVpucELQtWHoK85_KrAYKlychqg3behTWXCcRu8dpfjp/exec";
+    const SHEET_WEB_APP_URL = "PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
 
     let state = loadState();
     if (!Array.isArray(state.selectedRows)) state.selectedRows = []; 
@@ -422,7 +423,8 @@
 
         tr.innerHTML = `
           <td><input type="checkbox" data-select-index="${originalIndex}" ${state.selectedRows.includes(originalIndex) ? "checked" : ""}></td>
-          <td>${formatDate(log.start)} Work</td>
+          <td>${formatDate(log.start)}</td>
+          <td>Work</td>
           <td>${deinde}</td>
           <td>${neuro}</td>
           <td>${prometheus}</td>
@@ -556,7 +558,7 @@
         return;
       }
 
-      const header = "Description	Deinde	NeuroFine	Prometheus	Hourly Rate	Total Amount ($)";
+      const header = "Date	Description	Deinde	NeuroFine	Prometheus	Hourly Rate	Total Amount ($)";
       const rows = selectedLogs.map(log => {
         const hours = (log.durationMinutes / 60).toFixed(2);
         const rate = HOURLY_RATE;
@@ -592,3 +594,4 @@
   </script>
 </body>
 </html>
+
