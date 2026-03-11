@@ -11,14 +11,17 @@
       --text: #1f2937;
       --muted: #6b7280;
       --line: #e5e7eb;
-      --accent: #111827;
+      --accent: #4f46e5;
+      --accent-soft:#eef2ff;
+      --accent-strong:#3730a3;
     }
 
     * { box-sizing: border-box; }
     body {
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: var(--bg);
+      background: linear-gradient(180deg,#f8fafc, #eef2ff);
+      min-height:100vh;
       color: var(--text);
       padding: 16px;
     }
@@ -31,11 +34,12 @@
     }
 
     .card {
+      position:relative;
       background: var(--card);
       border: 1px solid var(--line);
       border-radius: 16px;
       padding: 16px;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+      box-shadow: 0 8px 22px rgba(0,0,0,0.06);
     }
 
     h1, h2 {
@@ -60,17 +64,21 @@
     }
 
     button, select, input, textarea {
+      transition:border 0.15s, box-shadow 0.15s;
       font: inherit;
     }
 
     .project-btn, .btn {
       border: 1px solid var(--line);
-      background: white;
+      background:white;
+      border:1px solid #e5e7eb;
       color: var(--text);
       border-radius: 12px;
       padding: 12px;
       cursor: pointer;
     }
+
+    .project-btn:hover{transform:translateY(-1px);box-shadow:0 4px 10px rgba(0,0,0,0.08);} 
 
     .project-btn.active {
       background: var(--accent);
@@ -85,12 +93,14 @@
     }
 
     .btn.primary {
+      box-shadow:0 6px 16px rgba(79,70,229,0.25);
       background: var(--accent);
       color: white;
       border-color: var(--accent);
     }
 
     .time {
+      color:var(--accent-strong);
       font-size: 36px;
       font-weight: 700;
       letter-spacing: 0.02em;
@@ -101,9 +111,10 @@
     .center { text-align: center; }
 
     .add-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:10px;
+      align-items:center;
     }
 
     input, textarea {
@@ -122,6 +133,7 @@
     }
 
     .quick {
+      background:var(--accent-soft);
       padding: 10px 12px;
       border-radius: 999px;
       border: 1px solid var(--line);
@@ -199,18 +211,18 @@
 <body>
   <div class="wrap">
     <div class="card">
-      <h1>Project Clock</h1>
+      <h1>⏱ Project Clock</h1>
       <div class="muted">All data is saved on this device only.</div>
     </div>
 
     <div class="card grid">
-      <h2>1. Choose project</h2>
+      <h2>📁 Choose project</h2>
       <div class="projects" id="projectButtons"></div>
       <div id="selectedProjectText" class="muted">No project selected.</div>
     </div>
 
     <div class="card grid">
-      <h2>2. Clock in / out</h2>
+      <h2>⏳ Clock in / out</h2>
       <div class="time" id="timerDisplay">00:00:00</div>
       <div class="center muted" id="timerStatus">Not running</div>
       <div class="center"><span id="runningPill"></span></div>
@@ -221,8 +233,9 @@
     </div>
 
     <div class="card grid">
-      <h2>3. Add time directly</h2>
+      <h2>➕ Add time directly</h2>
       <div class="add-grid">
+        <input id="manualDateInput" type="date" />
         <input id="hoursInput" type="number" min="0" step="1" placeholder="Hours" />
         <input id="minutesInput" type="number" min="0" step="15" placeholder="Minutes (15 min increments)" />
       </div>
@@ -238,7 +251,7 @@
     </div>
 
     <div class="card grid">
-      <h2>4. Log</h2>
+      <h2>📊 Log</h2>
       <div id="summary" class="muted"></div>
       <div style="overflow:auto;">
         <table>
@@ -282,6 +295,7 @@
     const runningPill = document.getElementById("runningPill");
     const startBtn = document.getElementById("startBtn");
     const stopBtn = document.getElementById("stopBtn");
+    const manualDateInput = document.getElementById("manualDateInput");
     const hoursInput = document.getElementById("hoursInput");
     const minutesInput = document.getElementById("minutesInput");
     const addTimeBtn = document.getElementById("addTimeBtn");
@@ -290,6 +304,7 @@
     const copyBtn = document.getElementById("copyBtn");
     const clearBtn = document.getElementById("clearBtn");
 
+    manualDateInput.value = new Date().toISOString().slice(0, 10);
     renderProjectButtons();
     render();
     startTicking();
@@ -529,11 +544,12 @@
         return;
       }
 
-      const now = Date.now();
+      const selectedDate = manualDateInput.value || new Date().toISOString().slice(0, 10);
+      const manualStart = new Date(`${selectedDate}T12:00:00`).getTime();
       const newLog = {
         project: state.selectedProject,
-        start: now,
-        end: now,
+        start: manualStart,
+        end: manualStart,
         durationMinutes: totalMinutes,
         manual: true
       };
@@ -591,7 +607,49 @@
       renderProjectButtons();
       render();
     };
+  
+    // simple confetti effect
+    function fireConfetti(){
+      const duration = 800;
+      const end = Date.now() + duration;
+      const colors = ['#4f46e5','#22c55e','#f59e0b','#ef4444'];
+      (function frame(){
+        const particleCount = 8;
+        colors.forEach((color,i)=>{
+          const el = document.createElement('div');
+          el.style.position='fixed';
+          el.style.left = (Math.random()*100)+'vw';
+          el.style.top = '-10px';
+          el.style.width='8px';
+          el.style.height='8px';
+          el.style.background=color;
+          el.style.pointerEvents='none';
+          el.style.borderRadius='2px';
+          el.style.zIndex='9999';
+          document.body.appendChild(el);
+          const fall = 100 + Math.random()*100;
+          el.animate([
+            {transform:'translateY(0px) rotate(0deg)',opacity:1},
+            {transform:`translateY(${fall}vh) rotate(720deg)`,opacity:0}
+          ],{duration:900+Math.random()*600,easing:'ease-out'}).onfinish=()=>el.remove();
+        });
+        if(Date.now()<end) requestAnimationFrame(frame);
+      })();
+    }
+
+    // trigger confetti on log creation
+    const originalStopHandler = stopBtn.onclick;
+    stopBtn.onclick = () => {
+      originalStopHandler();
+      fireConfetti();
+    };
+
+    const originalManualHandler = addTimeBtn.onclick;
+    addTimeBtn.onclick = () => {
+      originalManualHandler();
+      fireConfetti();
+    };
+
   </script>
 </body>
 </html>
-
